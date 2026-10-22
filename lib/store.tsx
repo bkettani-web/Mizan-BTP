@@ -5,7 +5,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -33,7 +32,10 @@ const AppContext = createContext<AppContextValue | null>(null);
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [donnees, setDonnees] = useState<DonneesPersistees>(donneesInitiales);
-  const hydrate = useRef(false);
+  // Devient vrai une fois les données sauvegardées relues : tant que ce n'est
+  // pas fait, on n'écrit rien dans localStorage pour ne pas écraser une
+  // sauvegarde existante avec les données de démo du tout premier rendu.
+  const [donneesChargees, setDonneesChargees] = useState(false);
 
   // Charge les données sauvegardées (si l'utilisateur a déjà testé l'app sur cet appareil).
   useEffect(() => {
@@ -42,29 +44,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (brut) {
         const parsed = JSON.parse(brut) as DonneesPersistees;
         if (parsed?.chantiers && parsed?.depenses) {
-          // localStorage n'existe pas côté serveur : cette synchronisation ponctuelle
-          // au montage (tableau de dépendances vide) est nécessaire pour hydrater
-          // l'état avec les données sauvegardées sur cet appareil.
-          // eslint-disable-next-line react-hooks/set-state-in-effect
+          // eslint-disable-next-line react-hooks/set-state-in-effect -- hydratation ponctuelle depuis localStorage (indisponible côté serveur)
           setDonnees(parsed);
         }
       }
     } catch {
       // stockage indisponible ou corrompu : on garde les données de démonstration
-    } finally {
-      hydrate.current = true;
     }
+    setDonneesChargees(true);
   }, []);
 
   // Sauvegarde à chaque changement, une fois l'hydratation initiale terminée.
   useEffect(() => {
-    if (!hydrate.current) return;
+    if (!donneesChargees) return;
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(donnees));
     } catch {
       // quota dépassé ou navigation privée : tant pis, les données restent en mémoire
     }
-  }, [donnees]);
+  }, [donnees, donneesChargees]);
 
   const value = useMemo<AppContextValue>(
     () => ({

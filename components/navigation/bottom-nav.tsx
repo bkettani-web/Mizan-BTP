@@ -4,10 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { NAV_ITEMS } from "@/components/navigation/nav-items";
+import { useLocale } from "@/lib/i18n/context";
 import { cn } from "@/lib/utils";
 
 export function BottomNav() {
   const pathname = usePathname();
+  const { t } = useLocale();
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-30 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:hidden">
@@ -46,7 +48,7 @@ export function BottomNav() {
                   isActive ? "-translate-y-2 text-terracotta" : "translate-y-0 text-anthracite/70",
                 )}
               >
-                {item.shortLabel}
+                {t(item.shortLabelKey)}
               </span>
             </Link>
           );

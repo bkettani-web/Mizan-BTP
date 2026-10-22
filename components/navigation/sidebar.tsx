@@ -5,13 +5,16 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 import { NAV_ITEMS } from "@/components/navigation/nav-items";
+import { LanguageToggle } from "@/components/navigation/language-toggle";
+import { useLocale } from "@/lib/i18n/context";
 import { cn } from "@/lib/utils";
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { t } = useLocale();
 
   return (
-    <aside className="bg-hero-navy fixed inset-y-0 left-0 z-30 hidden w-64 flex-col md:flex">
+    <aside className="bg-hero-navy fixed inset-y-0 start-0 z-30 hidden w-64 flex-col md:flex">
       <div className="flex h-20 items-center border-b border-white/10 px-6">
         <Image
           src="/mizan-logo-white.png"
@@ -36,7 +39,7 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "group relative flex items-center gap-3 rounded-xl py-3 pl-4 pr-3.5 text-[15px] font-medium transition-all duration-150",
+                "group relative flex items-center gap-3 rounded-xl py-3 ps-4 pe-3.5 text-[15px] font-medium transition-all duration-150",
                 isActive
                   ? "bg-white/10 text-white"
                   : "text-white/60 hover:bg-white/5 hover:text-white",
@@ -44,7 +47,7 @@ export function Sidebar() {
             >
               <span
                 className={cn(
-                  "absolute inset-y-1.5 left-0 w-1 rounded-full bg-terracotta transition-transform duration-200",
+                  "absolute inset-y-1.5 start-0 w-1 rounded-full bg-terracotta transition-transform duration-200",
                   isActive ? "scale-y-100" : "scale-y-0",
                 )}
                 aria-hidden
@@ -55,16 +58,15 @@ export function Sidebar() {
                   isActive ? "text-terracotta-light" : "group-hover:text-white",
                 )}
               />
-              {item.label}
+              {t(item.labelKey)}
             </Link>
           );
         })}
       </nav>
 
-      <div className="border-t border-white/10 px-6 py-5">
-        <p className="text-xs font-medium text-white/40">
-          L&apos;équilibre de vos chantiers
-        </p>
+      <div className="flex flex-col gap-3 border-t border-white/10 px-6 py-5">
+        <LanguageToggle variant="dark" />
+        <p className="text-xs font-medium text-white/40">{t("brand.tagline")}</p>
       </div>
     </aside>
   );

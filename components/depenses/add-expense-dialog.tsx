@@ -16,17 +16,23 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useAppData } from "@/lib/store";
+import { useLocale } from "@/lib/i18n/context";
+import { CURRENCY_LABEL } from "@/lib/i18n/translations";
 
-const CATEGORIES = [
-  "Gros œuvre",
-  "Main d'œuvre",
-  "Matériaux",
-  "Lots techniques",
-  "Finitions",
-  "Location matériel",
-  "Études",
-  "Administratif",
-  "Autre",
+/**
+ * Clé de traduction -> valeur stockée (toujours en français, comme les
+ * autres données métier : seule l'étiquette affichée change de langue).
+ */
+const CATEGORY_OPTIONS: { key: string; value: string }[] = [
+  { key: "categories.grosOeuvre", value: "Gros œuvre" },
+  { key: "categories.mainOeuvre", value: "Main d'œuvre" },
+  { key: "categories.materiaux", value: "Matériaux" },
+  { key: "categories.lotsTechniques", value: "Lots techniques" },
+  { key: "categories.finitions", value: "Finitions" },
+  { key: "categories.locationMateriel", value: "Location matériel" },
+  { key: "categories.etudes", value: "Études" },
+  { key: "categories.administratif", value: "Administratif" },
+  { key: "categories.autre", value: "Autre" },
 ];
 
 function dateInputVersISO(valeur: string) {
@@ -44,6 +50,7 @@ export function AddExpenseDialog({
   chantierIdParDefaut?: string;
 }) {
   const { chantiers, ajouterDepense } = useAppData();
+  const { locale, t } = useLocale();
   const [open, setOpen] = useState(false);
   const [plusDeDetails, setPlusDeDetails] = useState(false);
   const [confirme, setConfirme] = useState(false);
@@ -88,7 +95,7 @@ export function AddExpenseDialog({
     ) : (
       <Button onClick={() => setOpen(true)} className="shadow-sm" size="lg">
         <Plus className="size-5" />
-        Ajouter une dépense
+        {t("common.addExpense")}
       </Button>
     );
 
@@ -101,25 +108,19 @@ export function AddExpenseDialog({
             <div className="flex size-14 items-center justify-center rounded-full bg-success-bg">
               <Check className="size-7 text-success" />
             </div>
-            <p className="text-lg font-semibold text-navy">
-              Dépense enregistrée
-            </p>
-            <p className="text-sm text-anthracite">
-              Elle est déjà prise en compte dans votre tableau de bord.
-            </p>
+            <p className="text-lg font-semibold text-navy">{t("expenseForm.savedTitle")}</p>
+            <p className="text-sm text-anthracite">{t("expenseForm.savedDesc")}</p>
           </div>
         ) : (
           <>
             <DialogHeader>
-              <DialogTitle>Ajouter une dépense</DialogTitle>
-              <DialogDescription>
-                Remplissez les informations essentielles, ça prend 1 minute.
-              </DialogDescription>
+              <DialogTitle>{t("expenseForm.title")}</DialogTitle>
+              <DialogDescription>{t("expenseForm.subtitle")}</DialogDescription>
             </DialogHeader>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="chantier">Chantier</Label>
+                <Label htmlFor="chantier">{t("expenseForm.project")}</Label>
                 {chantierIdParDefaut ? (
                   <>
                     <input type="hidden" name="chantier" value={chantierIdParDefaut} />
@@ -134,7 +135,7 @@ export function AddExpenseDialog({
                 ) : (
                   <Select id="chantier" name="chantier" required defaultValue="">
                     <option value="" disabled>
-                      Choisir un chantier
+                      {t("expenseForm.projectPlaceholder")}
                     </option>
                     {chantiers.map((chantier) => (
                       <option key={chantier.id} value={chantier.id}>
@@ -146,18 +147,20 @@ export function AddExpenseDialog({
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">{t("expenseForm.description")}</Label>
                 <Input
                   id="description"
                   name="description"
-                  placeholder="Ex. Ciment et sable pour le 2e étage"
+                  placeholder={t("expenseForm.descriptionPlaceholder")}
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="montant">Montant (MAD)</Label>
+                  <Label htmlFor="montant">
+                    {t("expenseForm.amount", { currency: CURRENCY_LABEL[locale] })}
+                  </Label>
                   <Input
                     id="montant"
                     name="montant"
@@ -169,7 +172,7 @@ export function AddExpenseDialog({
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="date">Date</Label>
+                  <Label htmlFor="date">{t("expenseForm.date")}</Label>
                   <Input
                     id="date"
                     name="date"
@@ -181,14 +184,14 @@ export function AddExpenseDialog({
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="categorie">Catégorie</Label>
+                <Label htmlFor="categorie">{t("expenseForm.category")}</Label>
                 <Select id="categorie" name="categorie" defaultValue="">
                   <option value="" disabled>
-                    Choisir une catégorie
+                    {t("expenseForm.categoryPlaceholder")}
                   </option>
-                  {CATEGORIES.map((categorie) => (
-                    <option key={categorie} value={categorie}>
-                      {categorie}
+                  {CATEGORY_OPTIONS.map((categorie) => (
+                    <option key={categorie.value} value={categorie.value}>
+                      {t(categorie.key)}
                     </option>
                   ))}
                 </Select>
@@ -197,15 +200,15 @@ export function AddExpenseDialog({
               {plusDeDetails ? (
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="fournisseur">
-                    Fournisseur{" "}
+                    {t("expenseForm.supplier")}{" "}
                     <span className="font-normal text-anthracite">
-                      (optionnel)
+                      {t("expenseForm.supplierOptional")}
                     </span>
                   </Label>
                   <Input
                     id="fournisseur"
                     name="fournisseur"
-                    placeholder="Ex. Ciments de l'Atlas"
+                    placeholder={t("expenseForm.supplierPlaceholder")}
                   />
                 </div>
               ) : (
@@ -214,7 +217,7 @@ export function AddExpenseDialog({
                   onClick={() => setPlusDeDetails(true)}
                   className="self-start text-sm font-semibold text-blue hover:underline"
                 >
-                  + Ajouter un fournisseur (optionnel)
+                  {t("expenseForm.addSupplier")}
                 </button>
               )}
 
@@ -224,9 +227,9 @@ export function AddExpenseDialog({
                   variant="outline"
                   onClick={() => setOpen(false)}
                 >
-                  Annuler
+                  {t("common.cancel")}
                 </Button>
-                <Button type="submit">Enregistrer la dépense</Button>
+                <Button type="submit">{t("expenseForm.submit")}</Button>
               </DialogFooter>
             </form>
           </>

@@ -6,27 +6,29 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/empty-state";
 import { useAppData } from "@/lib/store";
+import { useLocale } from "@/lib/i18n/context";
 import { getFournisseurs } from "@/lib/stats";
 import { formatDate, formatMontant } from "@/lib/format";
 
 export default function FournisseursPage() {
   const { chantiers, depenses } = useAppData();
-  const fournisseurs = getFournisseurs(depenses, chantiers);
+  const { locale, t } = useLocale();
+  const fournisseurs = getFournisseurs(depenses, chantiers, t("common.projectNotFoundShort"));
 
   return (
     <div className="flex flex-col gap-6">
       <header>
-        <h1 className="text-2xl font-extrabold tracking-tight text-navy sm:text-3xl">Fournisseurs</h1>
-        <p className="mt-1 text-[15px] text-anthracite">
-          Calculés automatiquement à partir des dépenses enregistrées.
-        </p>
+        <h1 className="text-2xl font-extrabold tracking-tight text-navy sm:text-3xl">
+          {t("suppliersPage.title")}
+        </h1>
+        <p className="mt-1 text-[15px] text-anthracite">{t("suppliersPage.subtitle")}</p>
       </header>
 
       {fournisseurs.length === 0 ? (
         <EmptyState
           icon={Handshake}
-          titre="Aucun fournisseur pour le moment"
-          description="Les fournisseurs apparaîtront ici dès qu'ils seront renseignés sur une dépense."
+          titre={t("suppliersPage.noSuppliersTitle")}
+          description={t("suppliersPage.noSuppliersDesc")}
         />
       ) : (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -41,13 +43,19 @@ export default function FournisseursPage() {
                     {fournisseur.nom}
                   </h3>
                   <p className="shrink-0 text-lg font-bold text-navy">
-                    {formatMontant(fournisseur.montantTotal)}
+                    {formatMontant(fournisseur.montantTotal, locale)}
                   </p>
                 </div>
                 <p className="text-sm text-anthracite">
-                  {fournisseur.nombreDepenses} dépense
-                  {fournisseur.nombreDepenses > 1 ? "s" : ""} · dernière le{" "}
-                  {formatDate(fournisseur.derniereDepense)}
+                  {t(
+                    fournisseur.nombreDepenses > 1
+                      ? "suppliersPage.expenseMany"
+                      : "suppliersPage.expenseOne",
+                    {
+                      count: fournisseur.nombreDepenses,
+                      date: formatDate(fournisseur.derniereDepense, locale),
+                    },
+                  )}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {fournisseur.chantiers.map((nom) => (

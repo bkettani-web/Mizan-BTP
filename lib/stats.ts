@@ -1,4 +1,5 @@
 import type { Chantier, Depense } from "@/lib/types";
+import { INTL_LOCALE, type Locale } from "@/lib/i18n/translations";
 
 /** Dépenses enregistrées en détail pour un chantier donné, les plus récentes d'abord. */
 export function getDepensesDuChantier(chantierId: string, depenses: Depense[]) {
@@ -42,22 +43,12 @@ export function getIndicateursGlobaux(chantiers: Chantier[], depenses: Depense[]
   };
 }
 
-const MOIS_LABEL = [
-  "Jan",
-  "Fév",
-  "Mar",
-  "Avr",
-  "Mai",
-  "Jun",
-  "Jul",
-  "Aoû",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Déc",
-];
-
-export function getDepensesMensuelles(depenses: Depense[], nbMois = 6) {
+export function getDepensesMensuelles(
+  depenses: Depense[],
+  nbMois = 6,
+  locale: Locale = "fr",
+) {
+  const formateurMois = new Intl.DateTimeFormat(INTL_LOCALE[locale], { month: "short" });
   const maintenant = new Date();
   const mois = Array.from({ length: nbMois }).map((_, index) => {
     const offset = nbMois - 1 - index;
@@ -68,7 +59,7 @@ export function getDepensesMensuelles(depenses: Depense[], nbMois = 6) {
     );
     return {
       cle: `${date.getFullYear()}-${date.getMonth()}`,
-      mois: MOIS_LABEL[date.getMonth()],
+      mois: formateurMois.format(date),
       total: 0,
     };
   });
@@ -100,6 +91,7 @@ export type FournisseurResume = {
 export function getFournisseurs(
   depenses: Depense[],
   chantiers: Chantier[],
+  inconnuLabel = "Chantier inconnu",
 ): FournisseurResume[] {
   const parNom = new Map<string, FournisseurResume>();
 
@@ -108,7 +100,7 @@ export function getFournisseurs(
     if (!nom) continue;
 
     const chantierNom =
-      chantiers.find((c) => c.id === depense.chantierId)?.nom ?? "Chantier inconnu";
+      chantiers.find((c) => c.id === depense.chantierId)?.nom ?? inconnuLabel;
 
     const existant = parNom.get(nom);
     if (existant) {

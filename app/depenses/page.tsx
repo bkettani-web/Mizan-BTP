@@ -8,10 +8,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select } from "@/components/ui/select";
 import { EmptyState } from "@/components/empty-state";
 import { useAppData } from "@/lib/store";
+import { useLocale } from "@/lib/i18n/context";
 import { formatDate, formatMontant } from "@/lib/format";
 
 export default function DepensesPage() {
   const { chantiers, depenses } = useAppData();
+  const { locale, t } = useLocale();
   const [chantierId, setChantierId] = useState("tous");
 
   const depensesTriees = useMemo(
@@ -33,10 +35,13 @@ export default function DepensesPage() {
     <div className="flex flex-col gap-6">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-navy sm:text-3xl">Dépenses</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-navy sm:text-3xl">
+            {t("expensesPage.title")}
+          </h1>
           <p className="mt-1 text-[15px] text-anthracite">
-            {depenses.length} dépense{depenses.length > 1 ? "s" : ""} enregistrée
-            {depenses.length > 1 ? "s" : ""} au total.
+            {t(depenses.length > 1 ? "expensesPage.countMany" : "expensesPage.countOne", {
+              count: depenses.length,
+            })}
           </p>
         </div>
         <AddExpenseDialog />
@@ -45,11 +50,11 @@ export default function DepensesPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="w-full sm:w-72">
           <Select
-            aria-label="Filtrer par chantier"
+            aria-label={t("expensesPage.filterLabel")}
             value={chantierId}
             onChange={(event) => setChantierId(event.target.value)}
           >
-            <option value="tous">Tous les chantiers</option>
+            <option value="tous">{t("common.allProjects")}</option>
             {chantiers.map((chantier) => (
               <option key={chantier.id} value={chantier.id}>
                 {chantier.nom}
@@ -58,7 +63,7 @@ export default function DepensesPage() {
           </Select>
         </div>
         <p className="text-[15px] font-semibold text-navy">
-          Total affiché : {formatMontant(total)}
+          {t("common.totalDisplayed")} : {formatMontant(total, locale)}
         </p>
       </div>
 
@@ -67,8 +72,8 @@ export default function DepensesPage() {
           {depensesFiltrees.length === 0 ? (
             <EmptyState
               icon={Receipt}
-              titre="Aucune dépense ici"
-              description="Changez de filtre ou ajoutez une nouvelle dépense avec le bouton ci-dessus."
+              titre={t("expensesPage.noExpensesTitle")}
+              description={t("expensesPage.noExpensesDesc")}
             />
           ) : (
             depensesFiltrees.map((depense) => (
@@ -82,13 +87,13 @@ export default function DepensesPage() {
                   </p>
                   <p className="mt-0.5 text-sm text-anthracite">
                     {chantiers.find((c) => c.id === depense.chantierId)?.nom ??
-                      "Chantier inconnu"}{" "}
-                    · {depense.categorie} · {formatDate(depense.date)}
+                      t("common.projectNotFoundShort")}{" "}
+                    · {depense.categorie} · {formatDate(depense.date, locale)}
                     {depense.fournisseur ? ` · ${depense.fournisseur}` : ""}
                   </p>
                 </div>
                 <p className="shrink-0 text-[15px] font-semibold text-navy">
-                  {formatMontant(depense.montant)}
+                  {formatMontant(depense.montant, locale)}
                 </p>
               </div>
             ))

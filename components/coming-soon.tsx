@@ -1,5 +1,9 @@
+"use client";
+
 import type { LucideIcon } from "lucide-react";
 import { Sparkles } from "lucide-react";
+
+import { useLocale } from "@/lib/i18n/context";
 
 export function ComingSoon({
   titre,
@@ -10,6 +14,8 @@ export function ComingSoon({
   description: string;
   icon?: LucideIcon;
 }) {
+  const { t } = useLocale();
+
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-white px-6 py-16 text-center">
       <div className="flex size-16 items-center justify-center rounded-2xl bg-blue/10">
@@ -20,7 +26,7 @@ export function ComingSoon({
         {description}
       </p>
       <span className="mt-6 inline-flex items-center rounded-full bg-warning-bg px-3.5 py-1.5 text-sm font-semibold text-warning">
-        Bientôt disponible
+        {t("settingsPage.comingSoonBadge")}
       </span>
     </div>
   );

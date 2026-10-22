@@ -69,6 +69,11 @@ body {
   color: var(--color-navy);
 }
 
+/* La police arabe (Cairo) prend le relais de Manrope en mode RTL. */
+html[dir="rtl"] body {
+  font-family: var(--font-cairo), system-ui, sans-serif;
+}
+
 * {
   border-color: var(--color-border);
 }

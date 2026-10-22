@@ -19,12 +19,6 @@ export function getStatutChantier(
   return "vert";
 }
 
-export const STATUT_LABELS: Record<StatutChantier, string> = {
-  vert: "Tout va bien",
-  orange: "À surveiller",
-  rouge: "Dépassement",
-};
-
 export const STATUT_STYLES: Record<
   StatutChantier,
   {
