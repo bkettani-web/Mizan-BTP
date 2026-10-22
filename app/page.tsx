@@ -7,6 +7,7 @@ import { ChantierCard } from "@/components/dashboard/chantier-card";
 import { MonthlyExpensesChart } from "@/components/dashboard/monthly-expenses-chart";
 import { RecentExpenses } from "@/components/dashboard/recent-expenses";
 import { AddExpenseDialog } from "@/components/depenses/add-expense-dialog";
+import { AddChantierDialog } from "@/components/chantiers/add-chantier-dialog";
 import { EmptyState } from "@/components/empty-state";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useAppData } from "@/lib/store";
@@ -85,6 +86,7 @@ export default function DashboardPage() {
             icon={Building2}
             titre={t("dashboard.noProjectsTitle")}
             description={t("dashboard.noProjectsDesc")}
+            action={<AddChantierDialog />}
           />
         ) : (
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">

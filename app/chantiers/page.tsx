@@ -3,7 +3,7 @@
 import { Building2 } from "lucide-react";
 
 import { ChantierCard } from "@/components/dashboard/chantier-card";
-import { AddExpenseDialog } from "@/components/depenses/add-expense-dialog";
+import { AddChantierDialog } from "@/components/chantiers/add-chantier-dialog";
 import { EmptyState } from "@/components/empty-state";
 import { useAppData } from "@/lib/store";
 import { useLocale } from "@/lib/i18n/context";
@@ -25,7 +25,7 @@ export default function ChantiersPage() {
             })}
           </p>
         </div>
-        <AddExpenseDialog />
+        <AddChantierDialog />
       </header>
 
       {chantiers.length === 0 ? (

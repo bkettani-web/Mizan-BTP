@@ -25,8 +25,21 @@ function donneesInitiales(): DonneesPersistees {
 
 type AppContextValue = DonneesPersistees & {
   ajouterDepense: (depense: Omit<Depense, "id">) => void;
+  /** Crée un chantier et renvoie son identifiant (utile pour y naviguer ensuite). */
+  ajouterChantier: (chantier: Omit<Chantier, "id">) => string;
   reinitialiser: () => void;
 };
+
+function idDepuisNom(nom: string) {
+  const base = nom
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+  const suffixe = Date.now().toString(36);
+  return base ? `${base}-${suffixe}` : `chantier-${suffixe}`;
+}
 
 const AppContext = createContext<AppContextValue | null>(null);
 
@@ -75,6 +88,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
             ...prev.depenses,
           ],
         }));
+      },
+      ajouterChantier: (chantier) => {
+        const id = idDepuisNom(chantier.nom);
+        setDonnees((prev) => ({
+          ...prev,
+          chantiers: [...prev.chantiers, { ...chantier, id }],
+        }));
+        return id;
       },
       reinitialiser: () => setDonnees(donneesInitiales()),
     }),
