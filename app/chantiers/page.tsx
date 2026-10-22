@@ -14,7 +14,7 @@ export default function ChantiersPage() {
     <div className="flex flex-col gap-6">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-navy sm:text-3xl">Chantiers</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-navy sm:text-3xl">Chantiers</h1>
           <p className="mt-1 text-[15px] text-anthracite">
             {chantiers.length} chantier{chantiers.length > 1 ? "s" : ""} en cours.
             Cliquez sur un chantier pour voir le détail.

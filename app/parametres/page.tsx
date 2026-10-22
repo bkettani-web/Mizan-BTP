@@ -7,7 +7,7 @@ export default function ParametresPage() {
   return (
     <div className="flex flex-col gap-6">
       <header>
-        <h1 className="text-2xl font-bold text-navy sm:text-3xl">Paramètres</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight text-navy sm:text-3xl">Paramètres</h1>
       </header>
 
       <ResetDemoData />

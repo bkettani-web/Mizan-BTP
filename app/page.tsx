@@ -1,6 +1,6 @@
 "use client";
 
-import { Wallet, TrendingDown, PiggyBank, TrendingUp, Building2 } from "lucide-react";
+import { Wallet, TrendingDown, PiggyBank, TrendingUp, Building2, HardHat } from "lucide-react";
 
 import { KpiCard } from "@/components/dashboard/kpi-card";
 import { ChantierCard } from "@/components/dashboard/chantier-card";
@@ -21,16 +21,25 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-navy sm:text-3xl">
-            Bonjour, voici l&apos;état de vos chantiers
-          </h1>
-          <p className="mt-1 text-[15px] text-anthracite">
-            Un coup d&apos;œil suffit pour savoir où vous en êtes.
-          </p>
+      <header className="bg-hero-navy animate-float-in relative overflow-hidden rounded-3xl px-6 py-8 text-white shadow-[var(--shadow-card-hover)] sm:px-8 sm:py-10">
+        <HardHat
+          aria-hidden
+          className="pointer-events-none absolute -right-8 -top-10 size-44 text-white/[0.06] sm:size-60"
+        />
+        <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-wide text-terracotta-light">
+              Mizan BTP
+            </p>
+            <h1 className="mt-1 text-2xl font-extrabold tracking-tight sm:text-[34px]">
+              Bonjour, voici l&apos;état de vos chantiers
+            </h1>
+            <p className="mt-2 max-w-md text-[15px] text-white/70">
+              Un coup d&apos;œil suffit pour savoir où vous en êtes.
+            </p>
+          </div>
+          <AddExpenseDialog />
         </div>
-        <AddExpenseDialog />
       </header>
 
       <section
@@ -41,29 +50,34 @@ export default function DashboardPage() {
           icon={Wallet}
           label="Budget total"
           value={formatMontant(indicateurs.budgetTotal)}
+          tone="navy"
         />
         <KpiCard
           icon={TrendingDown}
           label="Argent dépensé"
           value={formatMontant(indicateurs.argentDepense)}
           sublabel={`${formatPourcentage(indicateurs.pourcentageDepense)} du budget`}
+          tone="terracotta"
         />
         <KpiCard
           icon={PiggyBank}
           label="Reste disponible"
           value={formatMontant(indicateurs.resteDisponible)}
-          tone={indicateurs.resteDisponible < 0 ? "danger" : "navy"}
+          tone="blue"
+          negatif={indicateurs.resteDisponible < 0}
         />
         <KpiCard
           icon={TrendingUp}
           label="Bénéfice prévu"
           value={formatMontant(indicateurs.beneficePrevu)}
           sublabel={`${formatPourcentage(indicateurs.margePourcentage)} de marge estimée`}
+          tone="success"
+          negatif={indicateurs.beneficePrevu < 0}
         />
       </section>
 
       <section aria-label="Mes chantiers" className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold text-navy">Mes chantiers</h2>
+        <h2 className="text-xl font-bold tracking-tight text-navy">Mes chantiers</h2>
         {chantiers.length === 0 ? (
           <EmptyState
             icon={Building2}

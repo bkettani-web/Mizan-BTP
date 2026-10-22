@@ -1,3 +1,4 @@
+import { CircleCheck, TriangleAlert, OctagonAlert } from "lucide-react";
 import type { StatutChantier } from "@/lib/types";
 
 /**
@@ -26,9 +27,41 @@ export const STATUT_LABELS: Record<StatutChantier, string> = {
 
 export const STATUT_STYLES: Record<
   StatutChantier,
-  { dot: string; text: string; bg: string; badge: "success" | "warning" | "danger" }
+  {
+    dot: string;
+    text: string;
+    bg: string;
+    badge: "success" | "warning" | "danger";
+    badgeSolid: "successSolid" | "warningSolid" | "dangerSolid";
+    icon: typeof CircleCheck;
+    accent: string;
+  }
 > = {
-  vert: { dot: "bg-success", text: "text-success", bg: "bg-success-bg", badge: "success" },
-  orange: { dot: "bg-warning", text: "text-warning", bg: "bg-warning-bg", badge: "warning" },
-  rouge: { dot: "bg-danger", text: "text-danger", bg: "bg-danger-bg", badge: "danger" },
+  vert: {
+    dot: "bg-success",
+    text: "text-success",
+    bg: "bg-success-bg",
+    badge: "success",
+    badgeSolid: "successSolid",
+    icon: CircleCheck,
+    accent: "bg-success",
+  },
+  orange: {
+    dot: "bg-warning",
+    text: "text-warning",
+    bg: "bg-warning-bg",
+    badge: "warning",
+    badgeSolid: "warningSolid",
+    icon: TriangleAlert,
+    accent: "bg-warning",
+  },
+  rouge: {
+    dot: "bg-danger",
+    text: "text-danger",
+    bg: "bg-danger-bg",
+    badge: "danger",
+    badgeSolid: "dangerSolid",
+    icon: OctagonAlert,
+    accent: "bg-danger",
+  },
 };

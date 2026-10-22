@@ -19,7 +19,7 @@ export default function RapportsPage() {
   return (
     <div className="flex flex-col gap-8">
       <header>
-        <h1 className="text-2xl font-bold text-navy sm:text-3xl">Rapports</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight text-navy sm:text-3xl">Rapports</h1>
         <p className="mt-1 text-[15px] text-anthracite">
           La synthèse financière de tous vos chantiers, en un coup d&apos;œil.
         </p>
@@ -29,24 +29,33 @@ export default function RapportsPage() {
         aria-label="Chiffres clés"
         className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"
       >
-        <KpiCard icon={Wallet} label="Budget total" value={formatMontant(indicateurs.budgetTotal)} />
+        <KpiCard
+          icon={Wallet}
+          label="Budget total"
+          value={formatMontant(indicateurs.budgetTotal)}
+          tone="navy"
+        />
         <KpiCard
           icon={TrendingDown}
           label="Argent dépensé"
           value={formatMontant(indicateurs.argentDepense)}
           sublabel={`${formatPourcentage(indicateurs.pourcentageDepense)} du budget`}
+          tone="terracotta"
         />
         <KpiCard
           icon={PiggyBank}
           label="Reste disponible"
           value={formatMontant(indicateurs.resteDisponible)}
-          tone={indicateurs.resteDisponible < 0 ? "danger" : "navy"}
+          tone="blue"
+          negatif={indicateurs.resteDisponible < 0}
         />
         <KpiCard
           icon={TrendingUp}
           label="Bénéfice prévu"
           value={formatMontant(indicateurs.beneficePrevu)}
           sublabel={`${formatPourcentage(indicateurs.margePourcentage)} de marge estimée`}
+          tone="success"
+          negatif={indicateurs.beneficePrevu < 0}
         />
       </section>
 
@@ -61,7 +70,7 @@ export default function RapportsPage() {
       </Card>
 
       <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold text-navy">Détail par chantier</h2>
+        <h2 className="text-xl font-bold tracking-tight text-navy">Détail par chantier</h2>
         <div className="flex flex-col gap-3">
           {chantiers.map((chantier) => {
             const argentDepense = getArgentDepenseChantier(chantier, depenses);
@@ -73,16 +82,21 @@ export default function RapportsPage() {
               chantier.avancementTravaux,
             );
             const styles = STATUT_STYLES[statut];
+            const StatutIcon = styles.icon;
 
             return (
-              <Card key={chantier.id}>
-                <CardContent className="flex flex-col gap-4 pt-5 sm:pt-6">
+              <Card key={chantier.id} className="relative overflow-hidden pl-1">
+                <span
+                  aria-hidden
+                  className={`absolute inset-y-0 left-0 w-1.5 ${styles.accent}`}
+                />
+                <CardContent className="flex flex-col gap-4 pt-5 pl-4 sm:pt-6 sm:pl-5">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <h3 className="text-base font-semibold text-navy sm:text-lg">
                       {chantier.nom} <span className="font-normal text-anthracite">— {chantier.ville}</span>
                     </h3>
-                    <Badge variant={styles.badge}>
-                      <span className={`size-1.5 rounded-full ${styles.dot}`} />
+                    <Badge variant={styles.badgeSolid}>
+                      <StatutIcon />
                       {STATUT_LABELS[statut]}
                     </Badge>
                   </div>

@@ -51,6 +51,7 @@ export default function ChantierDetailPage() {
     chantier.avancementTravaux,
   );
   const styles = STATUT_STYLES[statut];
+  const StatutIcon = styles.icon;
   const depensesChantier = getDepensesDuChantier(chantier.id, depenses);
 
   return (
@@ -67,11 +68,11 @@ export default function ChantierDetailPage() {
         <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-2xl font-bold text-navy sm:text-3xl">
+              <h1 className="text-2xl font-extrabold tracking-tight text-navy sm:text-3xl">
                 {chantier.nom}
               </h1>
-              <Badge variant={styles.badge}>
-                <span className={`size-1.5 rounded-full ${styles.dot}`} />
+              <Badge variant={styles.badgeSolid}>
+                <StatutIcon />
                 {STATUT_LABELS[statut]}
               </Badge>
             </div>
@@ -94,24 +95,33 @@ export default function ChantierDetailPage() {
         aria-label="Chiffres clés du chantier"
         className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"
       >
-        <KpiCard icon={Wallet} label="Budget total" value={formatMontant(chantier.budgetTotal)} />
+        <KpiCard
+          icon={Wallet}
+          label="Budget total"
+          value={formatMontant(chantier.budgetTotal)}
+          tone="navy"
+        />
         <KpiCard
           icon={TrendingDown}
           label="Argent dépensé"
           value={formatMontant(argentDepense)}
           sublabel={`${formatPourcentage(pourcentageDepense)} du budget`}
+          tone="terracotta"
         />
         <KpiCard
           icon={PiggyBank}
           label="Reste disponible"
           value={formatMontant(resteDisponible)}
-          tone={resteDisponible < 0 ? "danger" : "navy"}
+          tone="blue"
+          negatif={resteDisponible < 0}
         />
         <KpiCard
           icon={TrendingUp}
           label="Bénéfice prévu"
           value={formatMontant(beneficePrevu)}
           sublabel="Marge estimée sur ce chantier"
+          tone="success"
+          negatif={beneficePrevu < 0}
         />
       </section>
 
@@ -158,7 +168,7 @@ export default function ChantierDetailPage() {
             depensesChantier.map((depense) => (
               <div
                 key={depense.id}
-                className="flex items-center justify-between gap-4 py-3.5 first:pt-0 last:pb-0"
+                className="flex items-center justify-between gap-4 rounded-lg py-3.5 transition-colors first:pt-0 last:pb-0 hover:bg-surface"
               >
                 <div className="min-w-0">
                   <p className="truncate text-[15px] font-medium text-navy">

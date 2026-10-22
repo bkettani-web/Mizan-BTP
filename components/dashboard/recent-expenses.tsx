@@ -33,7 +33,7 @@ export function RecentExpenses({
           depenses.map((depense) => (
             <div
               key={depense.id}
-              className="flex items-center justify-between gap-4 py-3.5 first:pt-0 last:pb-0"
+              className="flex items-center justify-between gap-4 rounded-lg py-3.5 transition-colors first:pt-0 last:pb-0 hover:bg-surface"
             >
               <div className="min-w-0">
                 <p className="truncate text-[15px] font-medium text-navy">

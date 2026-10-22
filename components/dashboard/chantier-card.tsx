@@ -23,6 +23,7 @@ export function ChantierCard({
     chantier.avancementTravaux,
   );
   const styles = STATUT_STYLES[statut];
+  const StatutIcon = styles.icon;
   const pourcentageBudget = Math.min(
     100,
     Math.round((argentDepense / chantier.budgetTotal) * 100),
@@ -30,21 +31,25 @@ export function ChantierCard({
 
   return (
     <Link href={`/chantiers/${chantier.id}`} className="group block">
-      <Card className="h-full transition-shadow group-hover:shadow-md">
-        <CardContent className="flex flex-col gap-5 pt-5 sm:pt-6">
+      <Card className="relative h-full overflow-hidden pl-1 hover:-translate-y-1 hover:shadow-[var(--shadow-card-hover)]">
+        <span
+          aria-hidden
+          className={`absolute inset-y-0 left-0 w-1.5 ${styles.accent}`}
+        />
+        <CardContent className="flex flex-col gap-5 pt-5 pl-4 sm:pt-6 sm:pl-5">
           <div className="flex items-start justify-between gap-3">
             <div>
               <h3 className="flex items-center gap-1 text-base font-semibold text-navy sm:text-lg">
                 {chantier.nom}
-                <ChevronRight className="size-4 text-anthracite/50 transition-transform group-hover:translate-x-0.5" />
+                <ChevronRight className="size-4 text-anthracite/50 transition-transform duration-200 group-hover:translate-x-1 group-hover:text-terracotta" />
               </h3>
               <p className="mt-0.5 flex items-center gap-1 text-sm text-anthracite">
                 <MapPin className="size-3.5" />
                 {chantier.ville}
               </p>
             </div>
-            <Badge variant={styles.badge} className="shrink-0">
-              <span className={`size-1.5 rounded-full ${styles.dot}`} />
+            <Badge variant={styles.badgeSolid} className="shrink-0">
+              <StatutIcon />
               {STATUT_LABELS[statut]}
             </Badge>
           </div>

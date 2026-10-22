@@ -5,14 +5,16 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-terracotta disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold transition-all duration-150 ease-out active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-terracotta disabled:pointer-events-none disabled:opacity-50 disabled:active:scale-100 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        primary: "bg-terracotta text-white hover:bg-terracotta-dark",
-        secondary: "bg-navy text-white hover:bg-navy-light",
+        primary:
+          "bg-terracotta text-white shadow-[0_8px_20px_-6px_rgba(217,101,40,0.55)] hover:bg-terracotta-dark hover:shadow-[0_10px_24px_-6px_rgba(217,101,40,0.65)]",
+        secondary:
+          "bg-navy text-white shadow-[0_8px_20px_-6px_rgba(8,43,80,0.45)] hover:bg-navy-light",
         outline:
-          "border border-border bg-white text-navy hover:bg-surface",
+          "border border-border bg-white text-navy hover:border-navy/20 hover:bg-surface",
         ghost: "text-navy hover:bg-surface",
       },
       size: {

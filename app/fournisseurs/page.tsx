@@ -16,7 +16,7 @@ export default function FournisseursPage() {
   return (
     <div className="flex flex-col gap-6">
       <header>
-        <h1 className="text-2xl font-bold text-navy sm:text-3xl">Fournisseurs</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight text-navy sm:text-3xl">Fournisseurs</h1>
         <p className="mt-1 text-[15px] text-anthracite">
           Calculés automatiquement à partir des dépenses enregistrées.
         </p>
@@ -31,7 +31,10 @@ export default function FournisseursPage() {
       ) : (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {fournisseurs.map((fournisseur) => (
-            <Card key={fournisseur.nom}>
+            <Card
+              key={fournisseur.nom}
+              className="hover:-translate-y-1 hover:shadow-[var(--shadow-card-hover)]"
+            >
               <CardContent className="flex flex-col gap-3 pt-5 sm:pt-6">
                 <div className="flex items-start justify-between gap-3">
                   <h3 className="text-base font-semibold text-navy sm:text-lg">

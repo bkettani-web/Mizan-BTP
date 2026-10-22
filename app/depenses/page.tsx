@@ -33,7 +33,7 @@ export default function DepensesPage() {
     <div className="flex flex-col gap-6">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-navy sm:text-3xl">Dépenses</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-navy sm:text-3xl">Dépenses</h1>
           <p className="mt-1 text-[15px] text-anthracite">
             {depenses.length} dépense{depenses.length > 1 ? "s" : ""} enregistrée
             {depenses.length > 1 ? "s" : ""} au total.
@@ -74,7 +74,7 @@ export default function DepensesPage() {
             depensesFiltrees.map((depense) => (
               <div
                 key={depense.id}
-                className="flex items-center justify-between gap-4 py-3.5 first:pt-0 last:pb-0"
+                className="flex items-center justify-between gap-4 rounded-lg py-3.5 transition-colors first:pt-0 last:pb-0 hover:bg-surface"
               >
                 <div className="min-w-0">
                   <p className="truncate text-[15px] font-medium text-navy">

@@ -11,8 +11,8 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col bg-navy md:flex">
-      <div className="flex h-20 items-center px-6">
+    <aside className="bg-hero-navy fixed inset-y-0 left-0 z-30 hidden w-64 flex-col md:flex">
+      <div className="flex h-20 items-center border-b border-white/10 px-6">
         <Image
           src="/mizan-logo-white.png"
           alt="Mizan BTP"
@@ -23,7 +23,7 @@ export function Sidebar() {
         />
       </div>
 
-      <nav className="flex flex-1 flex-col gap-1 px-3 py-2">
+      <nav className="flex flex-1 flex-col gap-1 px-3 py-5">
         {NAV_ITEMS.map((item) => {
           const isActive =
             item.href === "/"
@@ -36,21 +36,35 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-xl px-3.5 py-3 text-[15px] font-medium transition-colors",
+                "group relative flex items-center gap-3 rounded-xl py-3 pl-4 pr-3.5 text-[15px] font-medium transition-all duration-150",
                 isActive
-                  ? "bg-terracotta text-white"
-                  : "text-white/70 hover:bg-white/10 hover:text-white",
+                  ? "bg-white/10 text-white"
+                  : "text-white/60 hover:bg-white/5 hover:text-white",
               )}
             >
-              <Icon className="size-5 shrink-0" />
+              <span
+                className={cn(
+                  "absolute inset-y-1.5 left-0 w-1 rounded-full bg-terracotta transition-transform duration-200",
+                  isActive ? "scale-y-100" : "scale-y-0",
+                )}
+                aria-hidden
+              />
+              <Icon
+                className={cn(
+                  "size-5 shrink-0 transition-colors",
+                  isActive ? "text-terracotta-light" : "group-hover:text-white",
+                )}
+              />
               {item.label}
             </Link>
           );
         })}
       </nav>
 
-      <div className="px-6 py-5 text-xs text-white/40">
-        L&apos;équilibre de vos chantiers
+      <div className="border-t border-white/10 px-6 py-5">
+        <p className="text-xs font-medium text-white/40">
+          L&apos;équilibre de vos chantiers
+        </p>
       </div>
     </aside>
   );
