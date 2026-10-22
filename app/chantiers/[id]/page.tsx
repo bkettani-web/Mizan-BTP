@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/empty-state";
+import { ChantierDetailsCard } from "@/components/chantiers/chantier-details-card";
 import { useAppData } from "@/lib/store";
 import { useLocale } from "@/lib/i18n/context";
 import { getArgentDepenseChantier, getDepensesDuChantier } from "@/lib/stats";
@@ -154,6 +155,8 @@ export default function ChantierDetailPage() {
           </div>
         </CardContent>
       </Card>
+
+      <ChantierDetailsCard chantier={chantier} />
 
       <Card>
         <CardHeader>

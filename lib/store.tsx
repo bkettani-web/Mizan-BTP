@@ -27,6 +27,8 @@ type AppContextValue = DonneesPersistees & {
   ajouterDepense: (depense: Omit<Depense, "id">) => void;
   /** Crée un chantier et renvoie son identifiant (utile pour y naviguer ensuite). */
   ajouterChantier: (chantier: Omit<Chantier, "id">) => string;
+  /** Met à jour un chantier existant (ex. compléter ses informations détaillées). */
+  modifierChantier: (id: string, patch: Partial<Omit<Chantier, "id">>) => void;
   reinitialiser: () => void;
 };
 
@@ -96,6 +98,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
           chantiers: [...prev.chantiers, { ...chantier, id }],
         }));
         return id;
+      },
+      modifierChantier: (id, patch) => {
+        setDonnees((prev) => ({
+          ...prev,
+          chantiers: prev.chantiers.map((chantier) =>
+            chantier.id === id ? { ...chantier, ...patch } : chantier,
+          ),
+        }));
       },
       reinitialiser: () => setDonnees(donneesInitiales()),
     }),

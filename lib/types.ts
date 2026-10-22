@@ -1,5 +1,31 @@
 export type StatutChantier = "vert" | "orange" | "rouge";
 
+/**
+ * Informations complémentaires sur un chantier, toutes facultatives et
+ * renseignées progressivement (terrain, autorisations, construction,
+ * contact sur place). Rien n'est requis à la création d'un chantier.
+ */
+export type ChantierDetails = {
+  // Terrain
+  surfaceTerrain?: number; // en m²
+  prixTerrain?: number; // en MAD, montant total
+  referenceFonciere?: string;
+  // Autorisations
+  numeroPermis?: string;
+  datePermis?: string; // ISO
+  // Construction
+  surfaceConstruite?: number; // en m²
+  nombreLots?: number;
+  nombreEtages?: number;
+  architecte?: string;
+  entrepriseConstruction?: string;
+  // Contact sur place
+  responsableChantier?: string;
+  telephoneResponsable?: string;
+  // Notes libres
+  notes?: string;
+};
+
 export type Chantier = {
   id: string;
   nom: string;
@@ -18,6 +44,7 @@ export type Chantier = {
   /** Avancement physique des travaux, de 0 à 100 */
   avancementTravaux: number;
   dateDebut: string;
+  details?: ChantierDetails;
 };
 
 export type Depense = {
