@@ -9,18 +9,28 @@ import {
   type ReactNode,
 } from "react";
 
-import { chantiers as chantiersInitiaux, depenses as depensesInitiales } from "@/lib/mock-data";
-import type { Chantier, Depense } from "@/lib/types";
+import {
+  chantiers as chantiersInitiaux,
+  depenses as depensesInitiales,
+  fournisseurs as fournisseursInitiaux,
+} from "@/lib/mock-data";
+import type { Chantier, Depense, Fournisseur } from "@/lib/types";
+import { idDepuisNom } from "@/lib/utils";
 
 const STORAGE_KEY = "mizan-btp-donnees-demo-v1";
 
 type DonneesPersistees = {
   chantiers: Chantier[];
   depenses: Depense[];
+  fournisseurs: Fournisseur[];
 };
 
 function donneesInitiales(): DonneesPersistees {
-  return { chantiers: chantiersInitiaux, depenses: depensesInitiales };
+  return {
+    chantiers: chantiersInitiaux,
+    depenses: depensesInitiales,
+    fournisseurs: fournisseursInitiaux,
+  };
 }
 
 type AppContextValue = DonneesPersistees & {
@@ -29,19 +39,10 @@ type AppContextValue = DonneesPersistees & {
   ajouterChantier: (chantier: Omit<Chantier, "id">) => string;
   /** Met à jour un chantier existant (ex. compléter ses informations détaillées). */
   modifierChantier: (id: string, patch: Partial<Omit<Chantier, "id">>) => void;
+  /** Crée un fournisseur et renvoie son identifiant. */
+  ajouterFournisseur: (fournisseur: Omit<Fournisseur, "id">) => string;
   reinitialiser: () => void;
 };
-
-function idDepuisNom(nom: string) {
-  const base = nom
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-  const suffixe = Date.now().toString(36);
-  return base ? `${base}-${suffixe}` : `chantier-${suffixe}`;
-}
 
 const AppContext = createContext<AppContextValue | null>(null);
 
@@ -57,10 +58,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
     try {
       const brut = window.localStorage.getItem(STORAGE_KEY);
       if (brut) {
-        const parsed = JSON.parse(brut) as DonneesPersistees;
+        const parsed = JSON.parse(brut) as Partial<DonneesPersistees>;
         if (parsed?.chantiers && parsed?.depenses) {
           // eslint-disable-next-line react-hooks/set-state-in-effect -- hydratation ponctuelle depuis localStorage (indisponible côté serveur)
-          setDonnees(parsed);
+          setDonnees({
+            chantiers: parsed.chantiers,
+            depenses: parsed.depenses,
+            // Sauvegardes antérieures à l'ajout du carnet fournisseurs.
+            fournisseurs: parsed.fournisseurs ?? fournisseursInitiaux,
+          });
         }
       }
     } catch {
@@ -92,7 +98,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }));
       },
       ajouterChantier: (chantier) => {
-        const id = idDepuisNom(chantier.nom);
+        const id = idDepuisNom(chantier.nom, "chantier");
         setDonnees((prev) => ({
           ...prev,
           chantiers: [...prev.chantiers, { ...chantier, id }],
@@ -106,6 +112,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
             chantier.id === id ? { ...chantier, ...patch } : chantier,
           ),
         }));
+      },
+      ajouterFournisseur: (fournisseur) => {
+        const id = idDepuisNom(fournisseur.nom, "fournisseur");
+        setDonnees((prev) => ({
+          ...prev,
+          fournisseurs: [...prev.fournisseurs, { ...fournisseur, id }],
+        }));
+        return id;
       },
       reinitialiser: () => setDonnees(donneesInitiales()),
     }),

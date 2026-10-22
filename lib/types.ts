@@ -47,6 +47,21 @@ export type Chantier = {
   details?: ChantierDetails;
 };
 
+/**
+ * Fiche fournisseur : un carnet de contacts indépendant des dépenses.
+ * Un fournisseur peut être ajouté avant même d'avoir enregistré une
+ * dépense avec lui (ex. pour garder ses coordonnées à portée de main).
+ */
+export type Fournisseur = {
+  id: string;
+  nom: string;
+  telephone?: string;
+  email?: string;
+  specialite?: string;
+  adresse?: string;
+  notes?: string;
+};
+
 export type Depense = {
   id: string;
   date: string;

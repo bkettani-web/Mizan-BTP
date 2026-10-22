@@ -1,4 +1,4 @@
-import type { Chantier, Depense } from "@/lib/types";
+import type { Chantier, Depense, Fournisseur } from "@/lib/types";
 
 function isoDaysAgo(daysAgo: number): string {
   const date = new Date();
@@ -104,4 +104,45 @@ export const depenses: Depense[] = [
   { id: "d18", date: isoDaysAgo(110), chantierId: "bay-view", description: "Fondations spéciales", fournisseur: "Travaux Publics Rabat", categorie: "Gros œuvre", montant: 310_000 },
   { id: "d19", date: isoDaysAgo(130), chantierId: "al-andalous", description: "Terrassement", fournisseur: "Travaux Publics Rabat", categorie: "Gros œuvre", montant: 275_000 },
   { id: "d20", date: isoDaysAgo(150), chantierId: "villas-atlas", description: "Permis et taxes de construction", fournisseur: "Commune de Marrakech", categorie: "Administratif", montant: 185_000 },
+];
+
+export const fournisseurs: Fournisseur[] = [
+  {
+    id: "sarl-battiss-pro",
+    nom: "SARL Bâtiss Pro",
+    telephone: "05 22 45 67 89",
+    email: "contact@battisspro.ma",
+    specialite: "Main d'œuvre",
+    adresse: "Zone industrielle Ain Sebaâ, Casablanca",
+  },
+  {
+    id: "ciments-atlas",
+    nom: "Ciments de l'Atlas",
+    telephone: "05 24 30 12 34",
+    email: "commercial@ciments-atlas.ma",
+    specialite: "Matériaux",
+    adresse: "Route de Safi, Marrakech",
+  },
+  {
+    id: "locagrue-maroc",
+    nom: "LocaGrue Maroc",
+    telephone: "06 61 11 22 33",
+    specialite: "Location matériel",
+  },
+  {
+    id: "travaux-publics-rabat",
+    nom: "Travaux Publics Rabat",
+    telephone: "05 37 70 80 90",
+    email: "devis@tprabat.ma",
+    specialite: "Gros œuvre",
+    adresse: "Avenue Hassan II, Rabat",
+  },
+  {
+    id: "menuiserie-du-nord",
+    nom: "Menuiserie du Nord",
+    telephone: "06 70 45 12 36",
+    specialite: "Finitions",
+    adresse: "Tanger",
+    notes: "Recommandé pour les portes et fenêtres aluminium. Devis demandé, pas encore de chantier en cours.",
+  },
 ];

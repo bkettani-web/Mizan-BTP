@@ -18,22 +18,7 @@ import {
 import { useAppData } from "@/lib/store";
 import { useLocale } from "@/lib/i18n/context";
 import { CURRENCY_LABEL } from "@/lib/i18n/translations";
-
-/**
- * Clé de traduction -> valeur stockée (toujours en français, comme les
- * autres données métier : seule l'étiquette affichée change de langue).
- */
-const CATEGORY_OPTIONS: { key: string; value: string }[] = [
-  { key: "categories.grosOeuvre", value: "Gros œuvre" },
-  { key: "categories.mainOeuvre", value: "Main d'œuvre" },
-  { key: "categories.materiaux", value: "Matériaux" },
-  { key: "categories.lotsTechniques", value: "Lots techniques" },
-  { key: "categories.finitions", value: "Finitions" },
-  { key: "categories.locationMateriel", value: "Location matériel" },
-  { key: "categories.etudes", value: "Études" },
-  { key: "categories.administratif", value: "Administratif" },
-  { key: "categories.autre", value: "Autre" },
-];
+import { CATEGORY_OPTIONS } from "@/lib/categories";
 
 function dateInputVersISO(valeur: string) {
   // Les champs <input type="date"> renvoient "AAAA-MM-JJ" : on fixe midi

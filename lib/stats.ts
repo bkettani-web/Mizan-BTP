@@ -1,4 +1,4 @@
-import type { Chantier, Depense } from "@/lib/types";
+import type { Chantier, Depense, Fournisseur } from "@/lib/types";
 import { INTL_LOCALE, type Locale } from "@/lib/i18n/translations";
 
 /** Dépenses enregistrées en détail pour un chantier donné, les plus récentes d'abord. */
@@ -81,19 +81,49 @@ export function getDernieresDepenses(depenses: Depense[], limite = 5) {
 }
 
 export type FournisseurResume = {
+  id?: string;
   nom: string;
   montantTotal: number;
   nombreDepenses: number;
   chantiers: string[];
-  derniereDepense: string;
+  derniereDepense?: string;
+  telephone?: string;
+  email?: string;
+  specialite?: string;
+  adresse?: string;
+  notes?: string;
 };
 
+/**
+ * Fusionne le carnet de fournisseurs (coordonnées saisies à la main) avec
+ * les statistiques calculées à partir des dépenses enregistrées. Un
+ * fournisseur peut apparaître ici sans avoir encore de dépense (coordonnées
+ * seules) ou sans fiche explicite (déduit du champ libre d'une dépense).
+ */
 export function getFournisseurs(
   depenses: Depense[],
   chantiers: Chantier[],
+  fournisseurs: Fournisseur[] = [],
   inconnuLabel = "Chantier inconnu",
 ): FournisseurResume[] {
   const parNom = new Map<string, FournisseurResume>();
+
+  for (const fournisseur of fournisseurs) {
+    const nom = fournisseur.nom.trim();
+    if (!nom) continue;
+    parNom.set(nom, {
+      id: fournisseur.id,
+      nom,
+      montantTotal: 0,
+      nombreDepenses: 0,
+      chantiers: [],
+      telephone: fournisseur.telephone,
+      email: fournisseur.email,
+      specialite: fournisseur.specialite,
+      adresse: fournisseur.adresse,
+      notes: fournisseur.notes,
+    });
+  }
 
   for (const depense of depenses) {
     const nom = depense.fournisseur?.trim();
@@ -109,7 +139,7 @@ export function getFournisseurs(
       if (!existant.chantiers.includes(chantierNom)) {
         existant.chantiers.push(chantierNom);
       }
-      if (new Date(depense.date) > new Date(existant.derniereDepense)) {
+      if (!existant.derniereDepense || new Date(depense.date) > new Date(existant.derniereDepense)) {
         existant.derniereDepense = depense.date;
       }
     } else {
