@@ -13,7 +13,8 @@ export const chantiers: Chantier[] = [
     nom: "Résidence Al Andalous",
     ville: "Casablanca",
     budgetTotal: 18_500_000,
-    argentDepense: 10_175_000,
+    // 10 175 000 MAD dépensés au total, dont 1 095 500 MAD suivis en détail ci-dessous
+    depensesAnterieures: 9_079_500,
     revenuPrevisionnel: 24_000_000,
     avancementTravaux: 55,
     dateDebut: isoDaysAgo(260),
@@ -23,7 +24,8 @@ export const chantiers: Chantier[] = [
     nom: "Villas Atlas",
     ville: "Marrakech",
     budgetTotal: 32_000_000,
-    argentDepense: 33_500_000,
+    // 33 500 000 MAD dépensés au total, dont 1 943 000 MAD suivis en détail ci-dessous
+    depensesAnterieures: 31_557_000,
     revenuPrevisionnel: 41_000_000,
     avancementTravaux: 82,
     dateDebut: isoDaysAgo(400),
@@ -33,7 +35,8 @@ export const chantiers: Chantier[] = [
     nom: "Immeuble Bay View",
     ville: "Tanger",
     budgetTotal: 14_000_000,
-    argentDepense: 7_500_000,
+    // 7 500 000 MAD dépensés au total, dont 936 000 MAD suivis en détail ci-dessous
+    depensesAnterieures: 6_564_000,
     revenuPrevisionnel: 19_500_000,
     avancementTravaux: 40,
     dateDebut: isoDaysAgo(190),
@@ -43,7 +46,8 @@ export const chantiers: Chantier[] = [
     nom: "Résidence Les Oliviers",
     ville: "Rabat",
     budgetTotal: 9_800_000,
-    argentDepense: 1_150_000,
+    // 1 150 000 MAD dépensés au total, dont 540 000 MAD suivis en détail ci-dessous
+    depensesAnterieures: 610_000,
     revenuPrevisionnel: 13_200_000,
     avancementTravaux: 10,
     dateDebut: isoDaysAgo(45),
@@ -72,7 +76,3 @@ export const depenses: Depense[] = [
   { id: "d19", date: isoDaysAgo(130), chantierId: "al-andalous", description: "Terrassement", fournisseur: "Travaux Publics Rabat", categorie: "Gros œuvre", montant: 275_000 },
   { id: "d20", date: isoDaysAgo(150), chantierId: "villas-atlas", description: "Permis et taxes de construction", fournisseur: "Commune de Marrakech", categorie: "Administratif", montant: 185_000 },
 ];
-
-export const CHANTIER_PAR_ID = Object.fromEntries(
-  chantiers.map((c) => [c.id, c]),
-);

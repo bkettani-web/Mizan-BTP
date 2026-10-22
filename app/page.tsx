@@ -1,3 +1,5 @@
+"use client";
+
 import { Wallet, TrendingDown, PiggyBank, TrendingUp, Building2 } from "lucide-react";
 
 import { KpiCard } from "@/components/dashboard/kpi-card";
@@ -7,12 +9,13 @@ import { RecentExpenses } from "@/components/dashboard/recent-expenses";
 import { AddExpenseDialog } from "@/components/depenses/add-expense-dialog";
 import { EmptyState } from "@/components/empty-state";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { chantiers, depenses } from "@/lib/mock-data";
+import { useAppData } from "@/lib/store";
 import { getDepensesMensuelles, getDernieresDepenses, getIndicateursGlobaux } from "@/lib/stats";
 import { formatMontant, formatPourcentage } from "@/lib/format";
 
 export default function DashboardPage() {
-  const indicateurs = getIndicateursGlobaux(chantiers);
+  const { chantiers, depenses } = useAppData();
+  const indicateurs = getIndicateursGlobaux(chantiers, depenses);
   const depensesMensuelles = getDepensesMensuelles(depenses, 6);
   const dernieresDepenses = getDernieresDepenses(depenses, 5);
 
@@ -70,7 +73,7 @@ export default function DashboardPage() {
         ) : (
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             {chantiers.map((chantier) => (
-              <ChantierCard key={chantier.id} chantier={chantier} />
+              <ChantierCard key={chantier.id} chantier={chantier} depenses={depenses} />
             ))}
           </div>
         )}
@@ -90,7 +93,7 @@ export default function DashboardPage() {
         </Card>
 
         <div className="xl:col-span-2">
-          <RecentExpenses depenses={dernieresDepenses} />
+          <RecentExpenses depenses={dernieresDepenses} chantiers={chantiers} />
         </div>
       </section>
     </div>

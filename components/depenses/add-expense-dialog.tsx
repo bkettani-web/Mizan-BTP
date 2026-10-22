@@ -15,7 +15,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { chantiers } from "@/lib/mock-data";
+import { useAppData } from "@/lib/store";
 
 const CATEGORIES = [
   "Gros œuvre",
@@ -29,23 +29,54 @@ const CATEGORIES = [
   "Autre",
 ];
 
+function dateInputVersISO(valeur: string) {
+  // Les champs <input type="date"> renvoient "AAAA-MM-JJ" : on fixe midi
+  // pour éviter tout décalage de fuseau horaire lors de l'affichage.
+  return new Date(`${valeur}T12:00:00`).toISOString();
+}
+
 export function AddExpenseDialog({
   trigger,
+  chantierIdParDefaut,
 }: {
   trigger?: React.ReactNode;
+  /** Pré-remplit et verrouille le chantier, utile depuis une fiche chantier. */
+  chantierIdParDefaut?: string;
 }) {
+  const { chantiers, ajouterDepense } = useAppData();
   const [open, setOpen] = useState(false);
   const [plusDeDetails, setPlusDeDetails] = useState(false);
   const [confirme, setConfirme] = useState(false);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = event.currentTarget;
+    const data = new FormData(form);
+
+    const chantierId = String(data.get("chantier") ?? "");
+    const description = String(data.get("description") ?? "").trim();
+    const montant = Number(data.get("montant"));
+    const date = String(data.get("date") ?? "");
+    const categorie = String(data.get("categorie") ?? "Autre");
+    const fournisseur = String(data.get("fournisseur") ?? "").trim();
+
+    if (!chantierId || !description || !montant || !date) return;
+
+    ajouterDepense({
+      chantierId,
+      description,
+      montant,
+      date: dateInputVersISO(date),
+      categorie: categorie || "Autre",
+      fournisseur: fournisseur || undefined,
+    });
+
     setConfirme(true);
     setTimeout(() => {
       setOpen(false);
       setConfirme(false);
       setPlusDeDetails(false);
-      event.currentTarget.reset();
+      form.reset();
     }, 900);
   }
 
@@ -74,7 +105,7 @@ export function AddExpenseDialog({
               Dépense enregistrée
             </p>
             <p className="text-sm text-anthracite">
-              Elle sera bientôt visible dans vos rapports.
+              Elle est déjà prise en compte dans votre tableau de bord.
             </p>
           </div>
         ) : (
@@ -89,16 +120,29 @@ export function AddExpenseDialog({
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="chantier">Chantier</Label>
-                <Select id="chantier" name="chantier" required defaultValue="">
-                  <option value="" disabled>
-                    Choisir un chantier
-                  </option>
-                  {chantiers.map((chantier) => (
-                    <option key={chantier.id} value={chantier.id}>
-                      {chantier.nom} — {chantier.ville}
+                {chantierIdParDefaut ? (
+                  <>
+                    <input type="hidden" name="chantier" value={chantierIdParDefaut} />
+                    <Select id="chantier" value={chantierIdParDefaut} disabled>
+                      {chantiers.map((chantier) => (
+                        <option key={chantier.id} value={chantier.id}>
+                          {chantier.nom} — {chantier.ville}
+                        </option>
+                      ))}
+                    </Select>
+                  </>
+                ) : (
+                  <Select id="chantier" name="chantier" required defaultValue="">
+                    <option value="" disabled>
+                      Choisir un chantier
                     </option>
-                  ))}
-                </Select>
+                    {chantiers.map((chantier) => (
+                      <option key={chantier.id} value={chantier.id}>
+                        {chantier.nom} — {chantier.ville}
+                      </option>
+                    ))}
+                  </Select>
+                )}
               </div>
 
               <div className="flex flex-col gap-1.5">
