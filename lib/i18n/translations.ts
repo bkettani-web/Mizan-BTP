@@ -208,6 +208,7 @@ const dictionaries = {
     },
     supplierForm: {
       title: "Ajouter un fournisseur",
+      editTitle: "Modifier le fournisseur",
       subtitle: "Gardez les coordonnées de vos fournisseurs à portée de main.",
       name: "Nom du fournisseur",
       namePlaceholder: "Ex. Ciments de l'Atlas",
@@ -223,8 +224,11 @@ const dictionaries = {
       notes: "Note",
       notesPlaceholder: "Informations complémentaires…",
       submit: "Ajouter le fournisseur",
+      saveEdit: "Enregistrer",
       savedTitle: "Fournisseur ajouté",
       savedDesc: "Il apparaît maintenant dans votre liste de fournisseurs.",
+      updatedTitle: "Fournisseur mis à jour",
+      updatedDesc: "Ses coordonnées ont bien été modifiées.",
     },
     categories: {
       grosOeuvre: "Gros œuvre",
@@ -416,6 +420,7 @@ const dictionaries = {
     },
     supplierForm: {
       title: "إضافة مورد",
+      editTitle: "تعديل المورد",
       subtitle: "احتفظوا ببيانات موردِيكم في متناول اليد.",
       name: "اسم المورد",
       namePlaceholder: "مثال: Ciments de l'Atlas",
@@ -431,8 +436,11 @@ const dictionaries = {
       notes: "ملاحظة",
       notesPlaceholder: "معلومات إضافية…",
       submit: "إضافة المورد",
+      saveEdit: "حفظ",
       savedTitle: "تمت إضافة المورد",
       savedDesc: "أصبح الآن ضمن قائمة مورديكم.",
+      updatedTitle: "تم تحديث المورد",
+      updatedDesc: "تم تعديل بياناته بنجاح.",
     },
     categories: {
       grosOeuvre: "الأشغال الكبرى",

@@ -1,9 +1,10 @@
 "use client";
 
-import { Handshake, Phone, Mail, MapPin } from "lucide-react";
+import { Handshake, Phone, Mail, MapPin, Pencil } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/empty-state";
 import { AddFournisseurDialog } from "@/components/fournisseurs/add-fournisseur-dialog";
 import { useAppData } from "@/lib/store";
@@ -62,9 +63,22 @@ export default function FournisseursPage() {
                       </p>
                     ) : null}
                   </div>
-                  <p className="shrink-0 text-lg font-bold text-navy">
-                    {formatMontant(fournisseur.montantTotal, locale)}
-                  </p>
+                  <div className="flex shrink-0 flex-col items-end gap-1.5">
+                    <p className="text-lg font-bold text-navy">
+                      {formatMontant(fournisseur.montantTotal, locale)}
+                    </p>
+                    {fournisseur.id ? (
+                      <AddFournisseurDialog
+                        fournisseur={carnetFournisseurs.find((f) => f.id === fournisseur.id)}
+                        trigger={
+                          <Button variant="outline" size="sm">
+                            <Pencil className="size-3.5" />
+                            {t("projectDetailsForm.editButton")}
+                          </Button>
+                        }
+                      />
+                    ) : null}
+                  </div>
                 </div>
 
                 <p className="text-sm text-anthracite">

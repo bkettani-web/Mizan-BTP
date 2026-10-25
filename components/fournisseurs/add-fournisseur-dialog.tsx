@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, cloneElement, isValidElement, type ReactElement } from "react";
 import { Plus, Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -19,13 +19,22 @@ import {
 import { useAppData } from "@/lib/store";
 import { useLocale } from "@/lib/i18n/context";
 import { CATEGORY_OPTIONS } from "@/lib/categories";
+import type { Fournisseur } from "@/lib/types";
 
-export function AddFournisseurDialog() {
-  const { ajouterFournisseur } = useAppData();
+export function AddFournisseurDialog({
+  fournisseur,
+  trigger,
+}: {
+  /** Fournisseur existant à modifier ; omis pour créer un nouveau fournisseur. */
+  fournisseur?: Fournisseur;
+  trigger?: ReactElement<{ onClick?: () => void }>;
+}) {
+  const { ajouterFournisseur, modifierFournisseur } = useAppData();
   const { t } = useLocale();
   const [open, setOpen] = useState(false);
-  const [plusDeDetails, setPlusDeDetails] = useState(false);
+  const [plusDeDetails, setPlusDeDetails] = useState(Boolean(fournisseur?.notes));
   const [confirme, setConfirme] = useState(false);
+  const modeEdition = Boolean(fournisseur);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -40,43 +49,64 @@ export function AddFournisseurDialog() {
       return v ? v : undefined;
     };
 
-    ajouterFournisseur({
+    const valeurs = {
       nom,
       telephone: champOuVide("telephone"),
       email: champOuVide("email"),
       specialite: champOuVide("specialite"),
       adresse: champOuVide("adresse"),
       notes: champOuVide("notes"),
-    });
+    };
+
+    if (modeEdition && fournisseur) {
+      modifierFournisseur(fournisseur.id, valeurs);
+    } else {
+      ajouterFournisseur(valeurs);
+    }
 
     setConfirme(true);
     setTimeout(() => {
       setOpen(false);
       setConfirme(false);
-      setPlusDeDetails(false);
-      form.reset();
+      if (!modeEdition) {
+        setPlusDeDetails(false);
+        form.reset();
+      }
     }, 900);
   }
 
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
+  const triggerElement =
+    trigger && isValidElement(trigger) ? (
+      cloneElement(trigger, { onClick: () => setOpen(true) })
+    ) : (
       <Button onClick={() => setOpen(true)} className="shadow-sm" size="lg">
         <Plus className="size-5" />
         {t("common.newSupplier")}
       </Button>
+    );
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      {triggerElement}
       <DialogContent>
         {confirme ? (
           <div className="flex flex-col items-center gap-3 py-6 text-center">
             <div className="flex size-14 items-center justify-center rounded-full bg-success-bg">
               <Check className="size-7 text-success" />
             </div>
-            <p className="text-lg font-semibold text-navy">{t("supplierForm.savedTitle")}</p>
-            <p className="text-sm text-anthracite">{t("supplierForm.savedDesc")}</p>
+            <p className="text-lg font-semibold text-navy">
+              {t(modeEdition ? "supplierForm.updatedTitle" : "supplierForm.savedTitle")}
+            </p>
+            <p className="text-sm text-anthracite">
+              {t(modeEdition ? "supplierForm.updatedDesc" : "supplierForm.savedDesc")}
+            </p>
           </div>
         ) : (
           <>
             <DialogHeader>
-              <DialogTitle>{t("supplierForm.title")}</DialogTitle>
+              <DialogTitle>
+                {t(modeEdition ? "supplierForm.editTitle" : "supplierForm.title")}
+              </DialogTitle>
               <DialogDescription>{t("supplierForm.subtitle")}</DialogDescription>
             </DialogHeader>
 
@@ -87,6 +117,7 @@ export function AddFournisseurDialog() {
                   id="nom"
                   name="nom"
                   placeholder={t("supplierForm.namePlaceholder")}
+                  defaultValue={fournisseur?.nom ?? ""}
                   required
                 />
               </div>
@@ -99,6 +130,7 @@ export function AddFournisseurDialog() {
                     name="telephone"
                     type="tel"
                     placeholder={t("supplierForm.phonePlaceholder")}
+                    defaultValue={fournisseur?.telephone ?? ""}
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
@@ -108,13 +140,18 @@ export function AddFournisseurDialog() {
                     name="email"
                     type="email"
                     placeholder={t("supplierForm.emailPlaceholder")}
+                    defaultValue={fournisseur?.email ?? ""}
                   />
                 </div>
               </div>
 
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="specialite">{t("supplierForm.specialty")}</Label>
-                <Select id="specialite" name="specialite" defaultValue="">
+                <Select
+                  id="specialite"
+                  name="specialite"
+                  defaultValue={fournisseur?.specialite ?? ""}
+                >
                   <option value="" disabled>
                     {t("supplierForm.specialtyPlaceholder")}
                   </option>
@@ -132,6 +169,7 @@ export function AddFournisseurDialog() {
                   id="adresse"
                   name="adresse"
                   placeholder={t("supplierForm.addressPlaceholder")}
+                  defaultValue={fournisseur?.adresse ?? ""}
                 />
               </div>
 
@@ -142,6 +180,7 @@ export function AddFournisseurDialog() {
                     id="notes"
                     name="notes"
                     placeholder={t("supplierForm.notesPlaceholder")}
+                    defaultValue={fournisseur?.notes ?? ""}
                   />
                 </div>
               ) : (
@@ -158,7 +197,9 @@ export function AddFournisseurDialog() {
                 <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                   {t("common.cancel")}
                 </Button>
-                <Button type="submit">{t("supplierForm.submit")}</Button>
+                <Button type="submit">
+                  {t(modeEdition ? "supplierForm.saveEdit" : "supplierForm.submit")}
+                </Button>
               </DialogFooter>
             </form>
           </>

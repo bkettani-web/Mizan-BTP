@@ -41,6 +41,8 @@ type AppContextValue = DonneesPersistees & {
   modifierChantier: (id: string, patch: Partial<Omit<Chantier, "id">>) => void;
   /** Crée un fournisseur et renvoie son identifiant. */
   ajouterFournisseur: (fournisseur: Omit<Fournisseur, "id">) => string;
+  /** Met à jour les coordonnées d'un fournisseur existant. */
+  modifierFournisseur: (id: string, patch: Partial<Omit<Fournisseur, "id">>) => void;
   reinitialiser: () => void;
 };
 
@@ -120,6 +122,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
           fournisseurs: [...prev.fournisseurs, { ...fournisseur, id }],
         }));
         return id;
+      },
+      modifierFournisseur: (id, patch) => {
+        setDonnees((prev) => ({
+          ...prev,
+          fournisseurs: prev.fournisseurs.map((fournisseur) =>
+            fournisseur.id === id ? { ...fournisseur, ...patch } : fournisseur,
+          ),
+        }));
       },
       reinitialiser: () => setDonnees(donneesInitiales()),
     }),
