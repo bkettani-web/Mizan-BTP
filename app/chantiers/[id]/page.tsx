@@ -2,15 +2,17 @@
 
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, MapPin, Wallet, TrendingDown, PiggyBank, TrendingUp, Calendar, Receipt } from "lucide-react";
+import { ArrowLeft, MapPin, Wallet, TrendingDown, PiggyBank, TrendingUp, Calendar, Receipt, Pencil } from "lucide-react";
 
 import { KpiCard } from "@/components/dashboard/kpi-card";
 import { AddExpenseDialog } from "@/components/depenses/add-expense-dialog";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/empty-state";
 import { ChantierDetailsCard } from "@/components/chantiers/chantier-details-card";
+import { ChantierDetailsDialog } from "@/components/chantiers/chantier-details-dialog";
 import { useAppData } from "@/lib/store";
 import { useLocale } from "@/lib/i18n/context";
 import { getArgentDepenseChantier, getDepensesDuChantier } from "@/lib/stats";
@@ -90,7 +92,18 @@ export default function ChantierDetailPage() {
               </span>
             </div>
           </div>
-          <AddExpenseDialog chantierIdParDefaut={chantier.id} />
+          <div className="flex flex-wrap items-center gap-2">
+            <ChantierDetailsDialog
+              chantier={chantier}
+              trigger={
+                <Button variant="outline">
+                  <Pencil className="size-4" />
+                  {t("projectDetailsForm.editProjectButton")}
+                </Button>
+              }
+            />
+            <AddExpenseDialog chantierIdParDefaut={chantier.id} />
+          </div>
         </header>
       </div>
 
@@ -171,23 +184,29 @@ export default function ChantierDetailPage() {
             />
           ) : (
             depensesChantier.map((depense) => (
-              <div
+              <AddExpenseDialog
                 key={depense.id}
-                className="flex items-center justify-between gap-4 rounded-lg py-3.5 transition-colors first:pt-0 last:pb-0 hover:bg-surface"
-              >
-                <div className="min-w-0">
-                  <p className="truncate text-[15px] font-medium text-navy">
-                    {depense.description}
-                  </p>
-                  <p className="mt-0.5 text-sm text-anthracite">
-                    {depense.categorie} · {formatDate(depense.date, locale)}
-                    {depense.fournisseur ? ` · ${depense.fournisseur}` : ""}
-                  </p>
-                </div>
-                <p className="shrink-0 text-[15px] font-semibold text-navy">
-                  {formatMontant(depense.montant, locale)}
-                </p>
-              </div>
+                depense={depense}
+                trigger={
+                  <button
+                    type="button"
+                    className="flex w-full items-center justify-between gap-4 rounded-lg py-3.5 text-start transition-colors first:pt-0 last:pb-0 hover:bg-surface"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-[15px] font-medium text-navy">
+                        {depense.description}
+                      </p>
+                      <p className="mt-0.5 text-sm text-anthracite">
+                        {depense.categorie} · {formatDate(depense.date, locale)}
+                        {depense.fournisseur ? ` · ${depense.fournisseur}` : ""}
+                      </p>
+                    </div>
+                    <p className="shrink-0 text-[15px] font-semibold text-navy">
+                      {formatMontant(depense.montant, locale)}
+                    </p>
+                  </button>
+                }
+              />
             ))
           )}
         </CardContent>

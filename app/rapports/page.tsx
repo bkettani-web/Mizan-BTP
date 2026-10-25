@@ -1,6 +1,7 @@
 "use client";
 
-import { Wallet, TrendingDown, PiggyBank, TrendingUp } from "lucide-react";
+import Link from "next/link";
+import { Wallet, TrendingDown, PiggyBank, TrendingUp, ChevronRight } from "lucide-react";
 
 import { KpiCard } from "@/components/dashboard/kpi-card";
 import { MonthlyExpensesChart } from "@/components/dashboard/monthly-expenses-chart";
@@ -89,59 +90,62 @@ export default function RapportsPage() {
             const StatutIcon = styles.icon;
 
             return (
-              <Card key={chantier.id} className="relative overflow-hidden ps-1">
-                <span
-                  aria-hidden
-                  className={`absolute inset-y-0 start-0 w-1.5 ${styles.accent}`}
-                />
-                <CardContent className="flex flex-col gap-4 pt-5 ps-4 sm:pt-6 sm:ps-5">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <h3 className="text-base font-semibold text-navy sm:text-lg">
-                      {chantier.nom} <span className="font-normal text-anthracite">— {chantier.ville}</span>
-                    </h3>
-                    <Badge variant={styles.badgeSolid}>
-                      <StatutIcon />
-                      {t(`status.${statut}`)}
-                    </Badge>
-                  </div>
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4">
-                    <div>
-                      <p className="text-xs font-medium uppercase tracking-wide text-anthracite">
-                        {t("reportsPage.budget")}
-                      </p>
-                      <p className="mt-0.5 text-[15px] font-semibold text-navy">
-                        {formatMontant(chantier.budgetTotal, locale)}
-                      </p>
+              <Link key={chantier.id} href={`/chantiers/${chantier.id}`} className="group block">
+                <Card className="relative overflow-hidden ps-1 hover:-translate-y-1 hover:shadow-[var(--shadow-card-hover)]">
+                  <span
+                    aria-hidden
+                    className={`absolute inset-y-0 start-0 w-1.5 ${styles.accent}`}
+                  />
+                  <CardContent className="flex flex-col gap-4 pt-5 ps-4 sm:pt-6 sm:ps-5">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <h3 className="flex items-center gap-1 text-base font-semibold text-navy sm:text-lg">
+                        {chantier.nom} <span className="font-normal text-anthracite">— {chantier.ville}</span>
+                        <ChevronRight className="size-4 text-anthracite/50 transition-transform duration-200 rtl:rotate-180 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 group-hover:text-terracotta" />
+                      </h3>
+                      <Badge variant={styles.badgeSolid}>
+                        <StatutIcon />
+                        {t(`status.${statut}`)}
+                      </Badge>
                     </div>
-                    <div>
-                      <p className="text-xs font-medium uppercase tracking-wide text-anthracite">
-                        {t("reportsPage.spent")}
-                      </p>
-                      <p className="mt-0.5 text-[15px] font-semibold text-navy">
-                        {formatMontant(argentDepense, locale)}
-                      </p>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4">
+                      <div>
+                        <p className="text-xs font-medium uppercase tracking-wide text-anthracite">
+                          {t("reportsPage.budget")}
+                        </p>
+                        <p className="mt-0.5 text-[15px] font-semibold text-navy">
+                          {formatMontant(chantier.budgetTotal, locale)}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-medium uppercase tracking-wide text-anthracite">
+                          {t("reportsPage.spent")}
+                        </p>
+                        <p className="mt-0.5 text-[15px] font-semibold text-navy">
+                          {formatMontant(argentDepense, locale)}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-medium uppercase tracking-wide text-anthracite">
+                          {t("reportsPage.remaining")}
+                        </p>
+                        <p
+                          className={`mt-0.5 text-[15px] font-semibold ${resteDisponible < 0 ? "text-danger" : "text-navy"}`}
+                        >
+                          {formatMontant(resteDisponible, locale)}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-medium uppercase tracking-wide text-anthracite">
+                          {t("reportsPage.expectedMargin")}
+                        </p>
+                        <p className="mt-0.5 text-[15px] font-semibold text-navy">
+                          {formatMontant(beneficePrevu, locale)}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-xs font-medium uppercase tracking-wide text-anthracite">
-                        {t("reportsPage.remaining")}
-                      </p>
-                      <p
-                        className={`mt-0.5 text-[15px] font-semibold ${resteDisponible < 0 ? "text-danger" : "text-navy"}`}
-                      >
-                        {formatMontant(resteDisponible, locale)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs font-medium uppercase tracking-wide text-anthracite">
-                        {t("reportsPage.expectedMargin")}
-                      </p>
-                      <p className="mt-0.5 text-[15px] font-semibold text-navy">
-                        {formatMontant(beneficePrevu, locale)}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </Link>
             );
           })}
         </div>

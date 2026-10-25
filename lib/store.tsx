@@ -35,14 +35,22 @@ function donneesInitiales(): DonneesPersistees {
 
 type AppContextValue = DonneesPersistees & {
   ajouterDepense: (depense: Omit<Depense, "id">) => void;
+  /** Met à jour une dépense existante. */
+  modifierDepense: (id: string, patch: Partial<Omit<Depense, "id">>) => void;
+  /** Supprime définitivement une dépense. */
+  supprimerDepense: (id: string) => void;
   /** Crée un chantier et renvoie son identifiant (utile pour y naviguer ensuite). */
   ajouterChantier: (chantier: Omit<Chantier, "id">) => string;
   /** Met à jour un chantier existant (ex. compléter ses informations détaillées). */
   modifierChantier: (id: string, patch: Partial<Omit<Chantier, "id">>) => void;
+  /** Supprime un chantier et toutes ses dépenses associées. */
+  supprimerChantier: (id: string) => void;
   /** Crée un fournisseur et renvoie son identifiant. */
   ajouterFournisseur: (fournisseur: Omit<Fournisseur, "id">) => string;
   /** Met à jour les coordonnées d'un fournisseur existant. */
   modifierFournisseur: (id: string, patch: Partial<Omit<Fournisseur, "id">>) => void;
+  /** Retire un fournisseur du carnet (n'efface pas les dépenses déjà enregistrées à son nom). */
+  supprimerFournisseur: (id: string) => void;
   reinitialiser: () => void;
 };
 
@@ -99,6 +107,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
           ],
         }));
       },
+      modifierDepense: (id, patch) => {
+        setDonnees((prev) => ({
+          ...prev,
+          depenses: prev.depenses.map((depense) =>
+            depense.id === id ? { ...depense, ...patch } : depense,
+          ),
+        }));
+      },
+      supprimerDepense: (id) => {
+        setDonnees((prev) => ({
+          ...prev,
+          depenses: prev.depenses.filter((depense) => depense.id !== id),
+        }));
+      },
       ajouterChantier: (chantier) => {
         const id = idDepuisNom(chantier.nom, "chantier");
         setDonnees((prev) => ({
@@ -115,6 +137,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
           ),
         }));
       },
+      supprimerChantier: (id) => {
+        setDonnees((prev) => ({
+          ...prev,
+          chantiers: prev.chantiers.filter((chantier) => chantier.id !== id),
+          depenses: prev.depenses.filter((depense) => depense.chantierId !== id),
+        }));
+      },
       ajouterFournisseur: (fournisseur) => {
         const id = idDepuisNom(fournisseur.nom, "fournisseur");
         setDonnees((prev) => ({
@@ -129,6 +158,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
           fournisseurs: prev.fournisseurs.map((fournisseur) =>
             fournisseur.id === id ? { ...fournisseur, ...patch } : fournisseur,
           ),
+        }));
+      },
+      supprimerFournisseur: (id) => {
+        setDonnees((prev) => ({
+          ...prev,
+          fournisseurs: prev.fournisseurs.filter((fournisseur) => fournisseur.id !== id),
         }));
       },
       reinitialiser: () => setDonnees(donneesInitiales()),

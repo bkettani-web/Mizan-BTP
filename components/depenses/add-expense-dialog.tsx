@@ -15,10 +15,12 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { ConfirmDelete } from "@/components/ui/confirm-delete";
 import { useAppData } from "@/lib/store";
 import { useLocale } from "@/lib/i18n/context";
 import { CURRENCY_LABEL } from "@/lib/i18n/translations";
 import { CATEGORY_OPTIONS } from "@/lib/categories";
+import type { Depense } from "@/lib/types";
 
 function dateInputVersISO(valeur: string) {
   // Les champs <input type="date"> renvoient "AAAA-MM-JJ" : on fixe midi
@@ -29,16 +31,20 @@ function dateInputVersISO(valeur: string) {
 export function AddExpenseDialog({
   trigger,
   chantierIdParDefaut,
+  depense,
 }: {
   trigger?: React.ReactNode;
   /** Pré-remplit et verrouille le chantier, utile depuis une fiche chantier. */
   chantierIdParDefaut?: string;
+  /** Dépense existante à modifier ; omis pour créer une nouvelle dépense. */
+  depense?: Depense;
 }) {
-  const { chantiers, ajouterDepense } = useAppData();
+  const { chantiers, ajouterDepense, modifierDepense, supprimerDepense } = useAppData();
   const { locale, t } = useLocale();
   const [open, setOpen] = useState(false);
-  const [plusDeDetails, setPlusDeDetails] = useState(false);
-  const [confirme, setConfirme] = useState(false);
+  const [plusDeDetails, setPlusDeDetails] = useState(Boolean(depense?.fournisseur));
+  const [issue, setIssue] = useState<"saved" | "deleted" | null>(null);
+  const modeEdition = Boolean(depense);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -54,21 +60,39 @@ export function AddExpenseDialog({
 
     if (!chantierId || !description || !montant || !date) return;
 
-    ajouterDepense({
+    const valeurs = {
       chantierId,
       description,
       montant,
       date: dateInputVersISO(date),
       categorie: categorie || "Autre",
       fournisseur: fournisseur || undefined,
-    });
+    };
 
-    setConfirme(true);
+    if (modeEdition && depense) {
+      modifierDepense(depense.id, valeurs);
+    } else {
+      ajouterDepense(valeurs);
+    }
+
+    setIssue("saved");
     setTimeout(() => {
       setOpen(false);
-      setConfirme(false);
-      setPlusDeDetails(false);
-      form.reset();
+      setIssue(null);
+      if (!modeEdition) {
+        setPlusDeDetails(false);
+        form.reset();
+      }
+    }, 900);
+  }
+
+  function handleDelete() {
+    if (!depense) return;
+    supprimerDepense(depense.id);
+    setIssue("deleted");
+    setTimeout(() => {
+      setOpen(false);
+      setIssue(null);
     }, 900);
   }
 
@@ -88,25 +112,39 @@ export function AddExpenseDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       {triggerElement}
       <DialogContent>
-        {confirme ? (
+        {issue ? (
           <div className="flex flex-col items-center gap-3 py-6 text-center">
             <div className="flex size-14 items-center justify-center rounded-full bg-success-bg">
               <Check className="size-7 text-success" />
             </div>
-            <p className="text-lg font-semibold text-navy">{t("expenseForm.savedTitle")}</p>
-            <p className="text-sm text-anthracite">{t("expenseForm.savedDesc")}</p>
+            <p className="text-lg font-semibold text-navy">
+              {t(
+                issue === "deleted"
+                  ? "expenseForm.deletedTitle"
+                  : modeEdition
+                    ? "expenseForm.updatedTitle"
+                    : "expenseForm.savedTitle",
+              )}
+            </p>
+            {issue === "saved" && (
+              <p className="text-sm text-anthracite">
+                {t(modeEdition ? "expenseForm.updatedDesc" : "expenseForm.savedDesc")}
+              </p>
+            )}
           </div>
         ) : (
           <>
             <DialogHeader>
-              <DialogTitle>{t("expenseForm.title")}</DialogTitle>
+              <DialogTitle>
+                {t(modeEdition ? "expenseForm.editTitle" : "expenseForm.title")}
+              </DialogTitle>
               <DialogDescription>{t("expenseForm.subtitle")}</DialogDescription>
             </DialogHeader>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="chantier">{t("expenseForm.project")}</Label>
-                {chantierIdParDefaut ? (
+                {chantierIdParDefaut && !modeEdition ? (
                   <>
                     <input type="hidden" name="chantier" value={chantierIdParDefaut} />
                     <Select id="chantier" value={chantierIdParDefaut} disabled>
@@ -118,7 +156,12 @@ export function AddExpenseDialog({
                     </Select>
                   </>
                 ) : (
-                  <Select id="chantier" name="chantier" required defaultValue="">
+                  <Select
+                    id="chantier"
+                    name="chantier"
+                    required
+                    defaultValue={depense?.chantierId ?? ""}
+                  >
                     <option value="" disabled>
                       {t("expenseForm.projectPlaceholder")}
                     </option>
@@ -137,6 +180,7 @@ export function AddExpenseDialog({
                   id="description"
                   name="description"
                   placeholder={t("expenseForm.descriptionPlaceholder")}
+                  defaultValue={depense?.description ?? ""}
                   required
                 />
               </div>
@@ -153,6 +197,7 @@ export function AddExpenseDialog({
                     inputMode="numeric"
                     min={0}
                     placeholder="0"
+                    defaultValue={depense?.montant ?? ""}
                     required
                   />
                 </div>
@@ -162,7 +207,7 @@ export function AddExpenseDialog({
                     id="date"
                     name="date"
                     type="date"
-                    defaultValue={new Date().toISOString().slice(0, 10)}
+                    defaultValue={depense?.date.slice(0, 10) ?? new Date().toISOString().slice(0, 10)}
                     required
                   />
                 </div>
@@ -170,7 +215,7 @@ export function AddExpenseDialog({
 
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="categorie">{t("expenseForm.category")}</Label>
-                <Select id="categorie" name="categorie" defaultValue="">
+                <Select id="categorie" name="categorie" defaultValue={depense?.categorie ?? ""}>
                   <option value="" disabled>
                     {t("expenseForm.categoryPlaceholder")}
                   </option>
@@ -194,6 +239,7 @@ export function AddExpenseDialog({
                     id="fournisseur"
                     name="fournisseur"
                     placeholder={t("expenseForm.supplierPlaceholder")}
+                    defaultValue={depense?.fournisseur ?? ""}
                   />
                 </div>
               ) : (
@@ -206,6 +252,16 @@ export function AddExpenseDialog({
                 </button>
               )}
 
+              {modeEdition && (
+                <ConfirmDelete
+                  triggerLabel={t("expenseForm.deleteExpense")}
+                  confirmMessage={t("expenseForm.deleteExpenseConfirm")}
+                  confirmLabel={t("common.delete")}
+                  cancelLabel={t("common.cancel")}
+                  onConfirm={handleDelete}
+                />
+              )}
+
               <DialogFooter className="mt-2">
                 <Button
                   type="button"
@@ -214,7 +270,9 @@ export function AddExpenseDialog({
                 >
                   {t("common.cancel")}
                 </Button>
-                <Button type="submit">{t("expenseForm.submit")}</Button>
+                <Button type="submit">
+                  {t(modeEdition ? "expenseForm.saveEdit" : "expenseForm.submit")}
+                </Button>
               </DialogFooter>
             </form>
           </>

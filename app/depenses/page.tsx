@@ -77,25 +77,31 @@ export default function DepensesPage() {
             />
           ) : (
             depensesFiltrees.map((depense) => (
-              <div
+              <AddExpenseDialog
                 key={depense.id}
-                className="flex items-center justify-between gap-4 rounded-lg py-3.5 transition-colors first:pt-0 last:pb-0 hover:bg-surface"
-              >
-                <div className="min-w-0">
-                  <p className="truncate text-[15px] font-medium text-navy">
-                    {depense.description}
-                  </p>
-                  <p className="mt-0.5 text-sm text-anthracite">
-                    {chantiers.find((c) => c.id === depense.chantierId)?.nom ??
-                      t("common.projectNotFoundShort")}{" "}
-                    · {depense.categorie} · {formatDate(depense.date, locale)}
-                    {depense.fournisseur ? ` · ${depense.fournisseur}` : ""}
-                  </p>
-                </div>
-                <p className="shrink-0 text-[15px] font-semibold text-navy">
-                  {formatMontant(depense.montant, locale)}
-                </p>
-              </div>
+                depense={depense}
+                trigger={
+                  <button
+                    type="button"
+                    className="flex w-full items-center justify-between gap-4 rounded-lg py-3.5 text-start transition-colors first:pt-0 last:pb-0 hover:bg-surface"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-[15px] font-medium text-navy">
+                        {depense.description}
+                      </p>
+                      <p className="mt-0.5 text-sm text-anthracite">
+                        {chantiers.find((c) => c.id === depense.chantierId)?.nom ??
+                          t("common.projectNotFoundShort")}{" "}
+                        · {depense.categorie} · {formatDate(depense.date, locale)}
+                        {depense.fournisseur ? ` · ${depense.fournisseur}` : ""}
+                      </p>
+                    </div>
+                    <p className="shrink-0 text-[15px] font-semibold text-navy">
+                      {formatMontant(depense.montant, locale)}
+                    </p>
+                  </button>
+                }
+              />
             ))
           )}
         </CardContent>

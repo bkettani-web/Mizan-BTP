@@ -16,6 +16,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { ConfirmDelete } from "@/components/ui/confirm-delete";
 import { useAppData } from "@/lib/store";
 import { useLocale } from "@/lib/i18n/context";
 import { CATEGORY_OPTIONS } from "@/lib/categories";
@@ -29,11 +30,11 @@ export function AddFournisseurDialog({
   fournisseur?: Fournisseur;
   trigger?: ReactElement<{ onClick?: () => void }>;
 }) {
-  const { ajouterFournisseur, modifierFournisseur } = useAppData();
+  const { ajouterFournisseur, modifierFournisseur, supprimerFournisseur } = useAppData();
   const { t } = useLocale();
   const [open, setOpen] = useState(false);
   const [plusDeDetails, setPlusDeDetails] = useState(Boolean(fournisseur?.notes));
-  const [confirme, setConfirme] = useState(false);
+  const [issue, setIssue] = useState<"saved" | "deleted" | null>(null);
   const modeEdition = Boolean(fournisseur);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -64,14 +65,24 @@ export function AddFournisseurDialog({
       ajouterFournisseur(valeurs);
     }
 
-    setConfirme(true);
+    setIssue("saved");
     setTimeout(() => {
       setOpen(false);
-      setConfirme(false);
+      setIssue(null);
       if (!modeEdition) {
         setPlusDeDetails(false);
         form.reset();
       }
+    }, 900);
+  }
+
+  function handleDelete() {
+    if (!fournisseur) return;
+    supprimerFournisseur(fournisseur.id);
+    setIssue("deleted");
+    setTimeout(() => {
+      setOpen(false);
+      setIssue(null);
     }, 900);
   }
 
@@ -89,17 +100,25 @@ export function AddFournisseurDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       {triggerElement}
       <DialogContent>
-        {confirme ? (
+        {issue ? (
           <div className="flex flex-col items-center gap-3 py-6 text-center">
             <div className="flex size-14 items-center justify-center rounded-full bg-success-bg">
               <Check className="size-7 text-success" />
             </div>
             <p className="text-lg font-semibold text-navy">
-              {t(modeEdition ? "supplierForm.updatedTitle" : "supplierForm.savedTitle")}
+              {t(
+                issue === "deleted"
+                  ? "supplierForm.deletedTitle"
+                  : modeEdition
+                    ? "supplierForm.updatedTitle"
+                    : "supplierForm.savedTitle",
+              )}
             </p>
-            <p className="text-sm text-anthracite">
-              {t(modeEdition ? "supplierForm.updatedDesc" : "supplierForm.savedDesc")}
-            </p>
+            {issue === "saved" && (
+              <p className="text-sm text-anthracite">
+                {t(modeEdition ? "supplierForm.updatedDesc" : "supplierForm.savedDesc")}
+              </p>
+            )}
           </div>
         ) : (
           <>
@@ -191,6 +210,16 @@ export function AddFournisseurDialog({
                 >
                   {t("supplierForm.addNotes")}
                 </button>
+              )}
+
+              {modeEdition && fournisseur && (
+                <ConfirmDelete
+                  triggerLabel={t("supplierForm.deleteSupplier")}
+                  confirmMessage={t("supplierForm.deleteSupplierConfirm")}
+                  confirmLabel={t("common.delete")}
+                  cancelLabel={t("common.cancel")}
+                  onConfirm={handleDelete}
+                />
               )}
 
               <DialogFooter className="mt-2">
